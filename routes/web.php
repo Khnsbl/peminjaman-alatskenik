@@ -53,6 +53,8 @@ Route::middleware(['auth', 'role.user'])->prefix('user')->name('user.')->group(f
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
     Route::get('/alat', [\App\Http\Controllers\User\AlatController::class, 'index'])->name('alat.index');
     Route::resource('peminjaman', \App\Http\Controllers\User\PeminjamanController::class)->only(['index', 'create', 'store']);
+    Route::get('/peminjaman/{peminjaman}/kembalikan', [\App\Http\Controllers\User\PeminjamanController::class, 'kembalikan'])->name('peminjaman.kembalikan');
+    Route::post('/peminjaman/{peminjaman}/konfirmasi', [\App\Http\Controllers\User\PeminjamanController::class, 'konfirmasi'])->name('peminjaman.konfirmasi');
 });
 
 require __DIR__.'/auth.php';

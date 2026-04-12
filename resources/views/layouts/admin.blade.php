@@ -23,27 +23,37 @@
             --accent-hover: #818cf8;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+        }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--main-bg);
             color: var(--text-primary);
-            margin: 0;
             min-height: 100vh;
             display: flex;
+            flex-direction: row;
+            overflow-x: hidden;
         }
 
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
             min-height: 100vh;
             background: var(--sidebar-bg);
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0; left: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
             z-index: 100;
             border-right: 1px solid var(--card-border);
+            overflow-y: auto;
         }
 
         .sidebar-brand {
@@ -53,6 +63,7 @@
             gap: 0.75rem;
             border-bottom: 1px solid var(--card-border);
             margin-bottom: 0.5rem;
+            flex-shrink: 0;
         }
 
         .brand-icon {
@@ -60,6 +71,7 @@
             background: var(--accent);
             border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
         }
 
         .brand-icon i { color: #fff; font-size: 1rem; }
@@ -91,7 +103,7 @@
 
         .nav-link-item:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
         .nav-link-item.active { background: var(--accent); color: #fff; }
-        .nav-link-item i { font-size: 1rem; width: 18px; text-align: center; }
+        .nav-link-item i { font-size: 1rem; width: 18px; text-align: center; flex-shrink: 0; }
 
         .nav-badge {
             margin-left: auto;
@@ -107,6 +119,7 @@
             margin-top: auto;
             padding: 1rem 0.75rem;
             border-top: 1px solid var(--card-border);
+            flex-shrink: 0;
         }
 
         .user-card {
@@ -126,6 +139,7 @@
             font-size: 0.8rem;
             font-weight: 700;
             color: #fff;
+            flex-shrink: 0;
         }
 
         .user-name { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
@@ -149,11 +163,14 @@
 
         .btn-logout:hover { background: rgba(239,68,68,0.2); color: #fca5a5; }
 
+        /* ===== MAIN WRAPPER ===== */
         .main-wrapper {
             margin-left: var(--sidebar-width);
             flex: 1;
-            padding: 1.75rem;
+            width: calc(100% - var(--sidebar-width));
             min-height: 100vh;
+            padding: 1.75rem;
+            overflow-x: hidden;
         }
 
         /* ===== TOP NAVBAR ===== */
@@ -162,6 +179,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.75rem;
+            width: 100%;
         }
 
         .top-navbar-title {
@@ -169,6 +187,7 @@
             font-weight: 700;
             color: var(--text-primary);
             margin: 0;
+            line-height: 1.3;
         }
 
         .top-navbar-date {
@@ -181,6 +200,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            flex-shrink: 0;
         }
 
         .btn-icon {
@@ -204,8 +224,10 @@
             font-size: 0.8rem;
             font-weight: 700;
             color: #fff;
+            flex-shrink: 0;
         }
 
+        /* ===== CARDS ===== */
         .dark-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -219,6 +241,7 @@
             border-radius: 12px;
             padding: 1.25rem;
             transition: transform 0.15s;
+            height: 100%;
         }
 
         .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.12); }
@@ -241,6 +264,7 @@
 
         .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
 
+        /* ===== TABLE ===== */
         .dark-table {
             --bs-table-bg: transparent;
             --bs-table-color: var(--text-secondary);
@@ -267,6 +291,7 @@
 
         .dark-table tbody tr:hover { background: rgba(255,255,255,0.03); }
 
+        /* ===== BADGES ===== */
         .status-badge {
             font-size: 0.72rem;
             font-weight: 600;
@@ -280,6 +305,7 @@
         .badge-red    { background: rgba(239,68,68,0.15);  color: #f87171; }
         .badge-gray   { background: rgba(255,255,255,0.08); color: var(--text-muted); }
 
+        /* ===== QUICK LINKS ===== */
         .quick-link {
             display: flex;
             align-items: center;
@@ -330,9 +356,14 @@
             transition: width 0.6s ease;
         }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .main-wrapper { margin-left: 0; padding: 1rem; }
+            .main-wrapper {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
         }
     </style>
 </head>

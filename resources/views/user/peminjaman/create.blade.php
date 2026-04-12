@@ -50,6 +50,13 @@
                    style="background: var(--main-bg); border-color: var(--card-border); color: var(--text-primary); font-size: 0.85rem;">
         </div>
 
+        <div class="mb-3">
+            <label class="form-label" style="font-size: 0.82rem; color: var(--text-secondary);">Tanggal Pengembalian</label>
+            <input type="date" name="tanggal_pengembalian" value="{{ old('tanggal_pengembalian', date('Y-m-d')) }}" required
+                   class="form-control"
+                   style="background: var(--main-bg); border-color: var(--card-border); color: var(--text-primary); font-size: 0.85rem;">
+        </div>
+
         <div class="mb-4">
             <label class="form-label" style="font-size: 0.82rem; color: var(--text-secondary);">Keterangan</label>
             <textarea name="keterangan" rows="3" placeholder="Keperluan peminjaman..." class="form-control"

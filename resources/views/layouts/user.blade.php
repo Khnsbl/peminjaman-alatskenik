@@ -283,8 +283,11 @@
                 <p class="top-navbar-date">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
             </div>
             <div class="top-navbar-actions">
-                <button class="btn-icon">
+                <button class="btn-icon position-relative" onclick="toggleNotif()">
                     <i class="bi bi-bell" style="color: var(--text-secondary); font-size: 0.95rem;"></i>
+                    @if(isset($dendaNotif) && $dendaNotif > 0)
+                        <span style="position: absolute; top: -4px; right: -4px; width: 8px; height: 8px; background: #f87171; border-radius: 50%;"></span>
+                    @endif
                 </button>
                 <div class="avatar-circle">{{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}</div>
             </div>
