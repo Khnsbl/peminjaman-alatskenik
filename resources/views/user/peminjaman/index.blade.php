@@ -3,6 +3,28 @@
 @section('page-title', 'Peminjaman Saya')
 
 @section('content')
+
+{{-- Notifikasi Denda --}}
+@php $dendaList = $peminjamans->where('status', 'perlu_bayar_denda'); @endphp
+@if($dendaList->count() > 0)
+<div class="mb-4 p-4 rounded" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);">
+    <div style="color: #f87171; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px;">
+        ⚠️ Kamu memiliki {{ $dendaList->count() }} denda yang harus dibayar!
+    </div>
+    @foreach($dendaList as $denda)
+    <div style="background: rgba(239,68,68,0.08); border-radius: 8px; padding: 10px 12px; margin-bottom: 6px;">
+        <div style="color: #fca5a5; font-size: 0.85rem;">
+            🔧 <strong>{{ $denda->alat->nama_alat }}</strong> —
+            Denda: <strong>Rp {{ number_format($denda->denda, 0, ',', '.') }}</strong>
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 2px;">
+            Segera hubungi petugas untuk melunasi denda
+        </div>
+    </div>
+    @endforeach
+</div>
+@endif
+
 <div class="dark-card">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h6 class="mb-0 fw-bold" style="color: var(--text-primary)">Riwayat Peminjaman</h6>
@@ -21,6 +43,7 @@
                 <th>Tgl Pinjam</th>
                 <th>Tgl Kembali</th>
                 <th>Status</th>
+                <th>Denda</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -31,16 +54,40 @@
                 <td style="color: var(--text-primary)">{{ $item->alat->nama_alat ?? '-' }}</td>
                 <td>{{ $item->jumlah }}</td>
                 <td>{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }}</td>
-                <td>{{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') : '-' }}</td>
+                <td>
+                    @if($item->tanggal_kembali)
+                        <span style="color: {{ $item->status == 'dipinjam' && \Carbon\Carbon::parse($item->tanggal_kembali)->isPast() ? '#f87171' : 'var(--text-secondary)' }}">
+                            {{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') }}
+                            @if($item->status == 'dipinjam' && \Carbon\Carbon::parse($item->tanggal_kembali)->isPast())
+                                <span style="font-size: 0.7rem;">⚠️ Terlambat</span>
+                            @endif
+                        </span>
+                    @else
+                        -
+                    @endif
+                </td>
                 <td>
                     @if($item->status == 'menunggu')
                         <span class="status-badge badge-yellow">Menunggu</span>
                     @elseif($item->status == 'dipinjam')
                         <span class="status-badge badge-blue">Dipinjam</span>
+                    @elseif($item->status == 'menunggu_verifikasi')
+                        <span class="status-badge badge-yellow">Menunggu Verifikasi</span>
+                    @elseif($item->status == 'perlu_bayar_denda')
+                        <span class="status-badge badge-red">Perlu Bayar Denda</span>
                     @elseif($item->status == 'dikembalikan')
-                        <span class="status-badge badge-green">Dikembalikan</span>
+                        <span class="status-badge badge-green">Selesai</span>
                     @else
                         <span class="status-badge badge-red">Ditolak</span>
+                    @endif
+                </td>
+                <td>
+                    @if($item->denda > 0)
+                        <span style="color: #f87171; font-weight: 600; font-size: 0.82rem;">
+                            Rp {{ number_format($item->denda, 0, ',', '.') }}
+                        </span>
+                    @else
+                        <span style="color: var(--text-muted); font-size: 0.78rem;">-</span>
                     @endif
                 </td>
                 <td>
@@ -57,7 +104,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="text-center py-4" style="color: var(--text-muted)">
+                <td colspan="8" class="text-center py-4" style="color: var(--text-muted)">
                     Belum ada peminjaman
                 </td>
             </tr>

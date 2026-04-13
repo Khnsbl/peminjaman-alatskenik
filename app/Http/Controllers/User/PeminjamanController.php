@@ -29,22 +29,25 @@ class PeminjamanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'alat_id'        => 'required',
-            'jumlah'         => 'required|integer|min:1',
-            'tanggal_pinjam' => 'required|date',
-            'keterangan'     => 'nullable|string',
+            'alat_id'         => 'required',
+            'jumlah'          => 'required|integer|min:1',
+            'tanggal_pinjam'  => 'required|date',
+            'tanggal_kembali' => 'required|date|after:tanggal_pinjam',
+            'keterangan'      => 'nullable|string',
         ]);
 
         Peminjaman::create([
-            'user_id'        => Auth::id(),
-            'alat_id'        => $request->alat_id,
-            'jumlah'         => $request->jumlah,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'status'         => 'menunggu',
-            'keterangan'     => $request->keterangan,
+            'user_id'         => Auth::id(),
+            'alat_id'         => $request->alat_id,
+            'jumlah'          => $request->jumlah,
+            'tanggal_pinjam'  => $request->tanggal_pinjam,
+            'tanggal_kembali' => $request->tanggal_kembali,
+            'status'          => 'menunggu',
+            'keterangan'      => $request->keterangan,
         ]);
 
-        return redirect()->route('user.peminjaman.index')->with('success', 'Peminjaman berhasil diajukan!');
+        return redirect()->route('user.peminjaman.index')
+            ->with('success', 'Peminjaman berhasil diajukan! Menunggu persetujuan petugas.');
     }
 
     public function kembalikan(Peminjaman $peminjaman)
@@ -67,39 +70,16 @@ class PeminjamanController extends Controller
             'catatan'              => 'nullable|string',
         ]);
 
-        // Upload foto bukti
         $foto = $request->file('foto_bukti')->store('bukti', 'public');
-
-        // Hitung denda jika terlambat
-        $denda        = 0;
-        $isTerlambat  = false;
-        $dendaPerHari = 5000;
-
-        if ($peminjaman->tanggal_kembali) {
-            $batasKembali        = Carbon::parse($peminjaman->tanggal_kembali);
-            $tanggalDikembalikan = Carbon::parse($request->tanggal_dikembalikan);
-
-            if ($tanggalDikembalikan->gt($batasKembali)) {
-                $hariTerlambat = $batasKembali->diffInDays($tanggalDikembalikan);
-                $denda         = $hariTerlambat * $dendaPerHari;
-                $isTerlambat   = true;
-            }
-        }
 
         $peminjaman->update([
             'foto_bukti'           => $foto,
             'tanggal_dikembalikan' => $request->tanggal_dikembalikan,
             'keterangan'           => $request->catatan,
-            'denda'                => $denda,
-            'is_terlambat'         => $isTerlambat,
-            'status'               => 'menunggu',
+            'status'               => 'menunggu_verifikasi',
         ]);
 
-        $pesan = 'Bukti pengembalian berhasil dikirim! Menunggu verifikasi petugas.';
-        if ($isTerlambat) {
-            $pesan = '⚠️ Kamu terlambat! Denda Rp ' . number_format($denda, 0, ',', '.') . '. Menunggu verifikasi petugas.';
-        }
-
-        return redirect()->route('user.peminjaman.index')->with('success', $pesan);
+        return redirect()->route('user.peminjaman.index')
+            ->with('success', '✅ Bukti pengembalian berhasil dikirim! Menunggu verifikasi petugas.');
     }
 }

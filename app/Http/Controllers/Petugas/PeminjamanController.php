@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Petugas;
 use App\Http\Controllers\Controller;
 use App\Models\Peminjaman;
 use App\Models\LogAktivitas;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PeminjamanController extends Controller
@@ -26,20 +27,29 @@ class PeminjamanController extends Controller
             'model_id'  => $peminjaman->id,
         ]);
 
-        return redirect()->route('petugas.peminjaman.index')->with('success', 'Peminjaman disetujui!');
+        return redirect()->route('petugas.peminjaman.index')
+            ->with('success', '✅ Peminjaman berhasil disetujui!');
     }
 
-    public function tolak(Peminjaman $peminjaman)
+    public function tolak(Request $request, Peminjaman $peminjaman)
     {
-        $peminjaman->update(['status' => 'ditolak']);
+        $request->validate([
+            'alasan_tolak' => 'required|string|max:255',
+        ]);
+
+        $peminjaman->update([
+            'status'     => 'ditolak',
+            'keterangan' => $request->alasan_tolak,
+        ]);
 
         LogAktivitas::create([
             'user_id'   => Auth::id(),
-            'aktivitas' => 'Menolak peminjaman: ' . $peminjaman->user->name,
+            'aktivitas' => 'Menolak peminjaman: ' . $peminjaman->user->name . ' - Alasan: ' . $request->alasan_tolak,
             'model'     => 'Peminjaman',
             'model_id'  => $peminjaman->id,
         ]);
 
-        return redirect()->route('petugas.peminjaman.index')->with('success', 'Peminjaman ditolak!');
+        return redirect()->route('petugas.peminjaman.index')
+            ->with('success', 'Peminjaman ditolak!');
     }
 }

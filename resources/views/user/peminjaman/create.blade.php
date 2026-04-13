@@ -51,15 +51,18 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label" style="font-size: 0.82rem; color: var(--text-secondary);">Tanggal Pengembalian</label>
-            <input type="date" name="tanggal_pengembalian" value="{{ old('tanggal_pengembalian', date('Y-m-d')) }}" required
+            <label class="form-label" style="font-size: 0.82rem; color: var(--text-secondary);">Tanggal Rencana Kembali</label>
+            <input type="date" name="tanggal_kembali" value="{{ old('tanggal_kembali') }}" required
                    class="form-control"
                    style="background: var(--main-bg); border-color: var(--card-border); color: var(--text-primary); font-size: 0.85rem;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                ⚠️ Keterlambatan akan dikenai denda Rp 5.000/hari
+            </div>
         </div>
 
         <div class="mb-4">
-            <label class="form-label" style="font-size: 0.82rem; color: var(--text-secondary);">Keterangan</label>
-            <textarea name="keterangan" rows="3" placeholder="Keperluan peminjaman..." class="form-control"
+            <label class="form-label" style="font-size: 0.82rem; color: var(--text-secondary);">Keterangan / Keperluan</label>
+            <textarea name="keterangan" rows="3" placeholder="Jelaskan keperluan peminjaman..." class="form-control"
                       style="background: var(--main-bg); border-color: var(--card-border); color: var(--text-primary); font-size: 0.85rem;">{{ old('keterangan') }}</textarea>
         </div>
 

@@ -36,6 +36,7 @@ Route::middleware(['auth', 'petugas'])->prefix('petugas')->name('petugas.')->gro
     // Verifikasi Pengembalian
     Route::get('/pengembalian', [\App\Http\Controllers\Petugas\PengembalianController::class, 'index'])->name('pengembalian.index');
     Route::post('/pengembalian/{peminjaman}/verifikasi', [\App\Http\Controllers\Petugas\PengembalianController::class, 'verifikasi'])->name('pengembalian.verifikasi');
+    Route::post('/pengembalian/{peminjaman}/konfirmasi-denda', [\App\Http\Controllers\Petugas\PengembalianController::class, 'konfirmasiDenda'])->name('pengembalian.konfirmasi-denda');
 
     // Kelola Alat
     Route::resource('alat', \App\Http\Controllers\Petugas\AlatController::class)->except(['show']);
