@@ -7,25 +7,40 @@ use App\Models\Peminjaman;
 use App\Models\LogAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PeminjamanController extends Controller
 {
     public function index()
     {
-        $peminjamans = Peminjaman::with(['user', 'alat'])->latest()->get();
-        return view('petugas.peminjaman.index', compact('peminjamans'));
+        $peminjaman = Peminjaman::with(['user', 'alat'])->latest()->get();
+        return view('petugas.peminjaman.index', compact('peminjaman'));
     }
 
     public function approve(Peminjaman $peminjaman)
     {
-        $peminjaman->update(['status' => 'dipinjam']);
+        DB::transaction(function () use ($peminjaman) {
+            $alat = $peminjaman->alat;
 
-        LogAktivitas::create([
-            'user_id'   => Auth::id(),
-            'aktivitas' => 'Menyetujui peminjaman: ' . $peminjaman->user->name,
-            'model'     => 'Peminjaman',
-            'model_id'  => $peminjaman->id,
-        ]);
+            // Cek stok cukup
+            if ($alat->stok < $peminjaman->jumlah) {
+                return redirect()->route('petugas.peminjaman.index')
+                    ->with('error', 'Stok tidak mencukupi untuk menyetujui peminjaman ini.');
+            }
+
+            // Kurangi stok
+            $alat->decrement('stok', $peminjaman->jumlah);
+
+            // Update status
+            $peminjaman->update(['status' => 'dipinjam']);
+
+            LogAktivitas::create([
+                'user_id'   => Auth::id(),
+                'aktivitas' => 'Menyetujui peminjaman: ' . $peminjaman->user->name . ' (' . $alat->nama_alat . ' ×' . $peminjaman->jumlah . ')',
+                'model'     => 'Peminjaman',
+                'model_id'  => $peminjaman->id,
+            ]);
+        });
 
         return redirect()->route('petugas.peminjaman.index')
             ->with('success', '✅ Peminjaman berhasil disetujui!');

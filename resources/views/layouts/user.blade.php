@@ -21,27 +21,36 @@
             --accent-hover: #818cf8;
         }
 
-        * { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--main-bg);
             color: var(--text-primary);
-            margin: 0;
-            min-height: 100vh;
             display: flex;
+            flex-direction: row;
         }
 
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
             min-height: 100vh;
             background: var(--sidebar-bg);
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0; left: 0;
+            top: 0; left: 0; bottom: 0;
             z-index: 100;
             border-right: 1px solid var(--card-border);
+            overflow-y: auto;
         }
 
         .sidebar-brand {
@@ -51,6 +60,7 @@
             gap: 0.75rem;
             border-bottom: 1px solid var(--card-border);
             margin-bottom: 0.5rem;
+            flex-shrink: 0;
         }
 
         .brand-icon {
@@ -58,6 +68,7 @@
             background: #7c3aed;
             border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
         }
 
         .brand-icon i { color: #fff; font-size: 1rem; }
@@ -89,12 +100,13 @@
 
         .nav-link-item:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
         .nav-link-item.active { background: var(--accent); color: #fff; }
-        .nav-link-item i { font-size: 1rem; width: 18px; text-align: center; }
+        .nav-link-item i { font-size: 1rem; width: 18px; text-align: center; flex-shrink: 0; }
 
         .sidebar-footer {
             margin-top: auto;
             padding: 1rem 0.75rem;
             border-top: 1px solid var(--card-border);
+            flex-shrink: 0;
         }
 
         .user-card {
@@ -114,6 +126,7 @@
             font-size: 0.8rem;
             font-weight: 700;
             color: #fff;
+            flex-shrink: 0;
         }
 
         .user-name { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
@@ -137,24 +150,46 @@
 
         .btn-logout:hover { background: rgba(239,68,68,0.2); color: #fca5a5; }
 
+        /* ===== MAIN WRAPPER ===== */
         .main-wrapper {
             margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 1.75rem;
+            width: calc(100% - var(--sidebar-width));
             min-height: 100vh;
+            padding: 1.75rem;
+            overflow-x: hidden;
         }
 
+        /* ===== TOP NAVBAR ===== */
         .top-navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.75rem;
+            width: 100%;
+            gap: 1rem;
         }
 
-        .top-navbar-title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+        .top-navbar > div:first-child { flex: 1; min-width: 0; }
+
+        .top-navbar-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .top-navbar-date { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
 
-        .top-navbar-actions { display: flex; align-items: center; gap: 0.5rem; }
+        .top-navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
 
         .btn-icon {
             background: var(--card-bg);
@@ -163,7 +198,11 @@
             width: 36px; height: 36px;
             display: flex; align-items: center; justify-content: center;
             padding: 0; cursor: pointer;
+            transition: all 0.15s;
+            flex-shrink: 0;
         }
+
+        .btn-icon:hover { border-color: rgba(255,255,255,0.15); }
 
         .avatar-circle {
             width: 34px; height: 34px;
@@ -171,8 +210,10 @@
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             font-size: 0.8rem; font-weight: 700; color: #fff;
+            flex-shrink: 0;
         }
 
+        /* ===== CARDS ===== */
         .dark-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -186,9 +227,10 @@
             border-radius: 12px;
             padding: 1.25rem;
             transition: transform 0.15s;
+            height: 100%;
         }
 
-        .stat-card:hover { transform: translateY(-2px); }
+        .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.12); }
 
         .stat-icon {
             width: 42px; height: 42px;
@@ -198,9 +240,10 @@
             margin-bottom: 0.9rem;
         }
 
-        .stat-number { font-size: 2rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: var(--text-primary); line-height: 1; letter-spacing: -0.04em; }
         .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
 
+        /* ===== TABLE ===== */
         .dark-table {
             --bs-table-bg: transparent;
             --bs-table-color: var(--text-secondary);
@@ -224,15 +267,60 @@
 
         .dark-table tbody tr:hover { background: rgba(255,255,255,0.03); }
 
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+            padding-bottom: 0.5rem;
+        }
+
+        .table-responsive table {
+            min-width: 560px;
+        }
+
+        /* ===== BADGES ===== */
         .status-badge { font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
         .badge-blue   { background: rgba(59,130,246,0.15); color: #60a5fa; }
         .badge-green  { background: rgba(16,185,129,0.15); color: #34d399; }
         .badge-yellow { background: rgba(245,158,11,0.15); color: #fbbf24; }
         .badge-red    { background: rgba(239,68,68,0.15);  color: #f87171; }
+        .badge-gray   { background: rgba(255,255,255,0.08); color: var(--text-muted); }
 
+        /* ===== FORM STYLES ===== */
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            padding: 0.6rem 0.9rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.07);
+            border-color: var(--accent);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+        }
+
+        .form-control::placeholder { color: var(--text-muted); }
+
+        .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-select option { background: var(--card-bg); color: var(--text-primary); }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .main-wrapper { margin-left: 0; padding: 1rem; }
+            .main-wrapper { margin-left: 0; width: 100%; padding: 1rem; }
+            .main-wrapper > *:not(.top-navbar):not(.alert) {
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
     </style>
 </head>
@@ -297,6 +385,14 @@
             <div class="alert alert-dismissible fade show mb-3" role="alert"
                  style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #34d399; font-size: 0.85rem;">
                 {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" style="filter: invert(1);"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-dismissible fade show mb-3" role="alert"
+                 style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; font-size: 0.85rem;">
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" style="filter: invert(1);"></button>
             </div>
         @endif

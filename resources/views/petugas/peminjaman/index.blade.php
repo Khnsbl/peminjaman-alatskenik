@@ -23,7 +23,8 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($peminjamans as $index => $item)
+            {{-- PERBAIKAN: $peminjamans → $peminjaman --}}
+            @forelse($peminjaman as $index => $item)
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>
@@ -37,8 +38,9 @@
                 </td>
                 <td>{{ $item->jumlah }}</td>
                 <td>{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }}</td>
-                <td>{{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') : '-' }}</td>
-                <td style="font-size: 0.78rem; max-width: 150px;">{{ $item->keterangan ?? '-' }}</td>
+                {{-- PERBAIKAN: tanggal_kembali → tanggal_rencana_kembali --}}
+                <td>{{ $item->tanggal_rencana_kembali ? \Carbon\Carbon::parse($item->tanggal_rencana_kembali)->format('d M Y') : '-' }}</td>
+                <td style="font-size: 0.78rem; max-width: 150px;">{{ $item->keperluan ?? '-' }}</td>
                 <td>
                     @if($item->status == 'menunggu')
                         <span class="status-badge badge-yellow">Menunggu</span>

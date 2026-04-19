@@ -17,49 +17,43 @@ class PengembalianController extends Controller
             ->whereIn('status', ['menunggu_verifikasi', 'perlu_bayar_denda'])
             ->latest()
             ->get();
+
         return view('petugas.pengembalian.index', compact('peminjamans'));
     }
 
     public function verifikasi(Request $request, Peminjaman $peminjaman)
     {
-        $dendaPerHari = 5000;
-        $denda        = 0;
-        $isTerlambat  = false;
+        $request->validate([
+            'aksi'  => 'required|in:selesai,denda',
+            'denda' => 'required_if:aksi,denda|nullable|integer|min:0',
+        ]);
 
-        if ($peminjaman->tanggal_kembali && $peminjaman->tanggal_dikembalikan) {
-            $batas       = Carbon::parse($peminjaman->tanggal_kembali);
-            $dikembalikan = Carbon::parse($peminjaman->tanggal_dikembalikan);
-
-            if ($dikembalikan->gt($batas)) {
-                $hariTerlambat = $batas->diffInDays($dikembalikan);
-                $denda         = $hariTerlambat * $dendaPerHari;
-                $isTerlambat   = true;
-            }
-        }
-
-        if ($isTerlambat) {
+        if ($request->aksi === 'denda') {
+            // Kenakan denda manual
             $peminjaman->update([
                 'status'       => 'perlu_bayar_denda',
-                'denda'        => $denda,
+                'denda'        => $request->denda,
                 'is_terlambat' => true,
             ]);
 
             LogAktivitas::create([
                 'user_id'   => Auth::id(),
-                'aktivitas' => 'Memverifikasi pengembalian terlambat: ' . $peminjaman->user->name . ' - Denda Rp ' . number_format($denda, 0, ',', '.'),
+                'aktivitas' => 'Mengenakan denda pengembalian: ' . $peminjaman->user->name . ' - Rp ' . number_format($request->denda, 0, ',', '.'),
                 'model'     => 'Peminjaman',
                 'model_id'  => $peminjaman->id,
             ]);
 
             return redirect()->route('petugas.pengembalian.index')
-                ->with('success', '⚠️ Pengembalian terlambat! Denda Rp ' . number_format($denda, 0, ',', '.') . ' telah dikenakan.');
+                ->with('success', '⚠️ Denda Rp ' . number_format($request->denda, 0, ',', '.') . ' telah dikenakan.');
         }
 
+        // Selesai tanpa denda — kembalikan stok
+        $peminjaman->alat->increment('stok', $peminjaman->jumlah);
+
         $peminjaman->update([
-            'status'           => 'dikembalikan',
-            'tanggal_kembali'  => $peminjaman->tanggal_dikembalikan,
-            'denda'            => 0,
-            'is_terlambat'     => false,
+            'status'       => 'dikembalikan',
+            'denda'        => 0,
+            'is_terlambat' => false,
         ]);
 
         LogAktivitas::create([
@@ -75,6 +69,9 @@ class PengembalianController extends Controller
 
     public function konfirmasiDenda(Peminjaman $peminjaman)
     {
+        // Denda lunas — kembalikan stok
+        $peminjaman->alat->increment('stok', $peminjaman->jumlah);
+
         $peminjaman->update(['status' => 'dikembalikan']);
 
         LogAktivitas::create([

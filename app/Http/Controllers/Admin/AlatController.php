@@ -27,12 +27,12 @@ class AlatController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_alat'  => 'required|unique:alats',
-            'nama_alat'  => 'required|string|max:255',
-            'kategori_id'=> 'required',
-            'stok'       => 'required|integer|min:0',
-            'kondisi'    => 'required|in:baik,rusak,perbaikan',
-            'foto'       => 'nullable|image|max:2048',
+            'kode_alat'   => 'required|unique:alats',
+            'nama_alat'   => 'required|string|max:255',
+            'kategori_id' => 'required',
+            'stok'        => 'required|integer|min:0',
+            'kondisi'     => 'required|in:baik,rusak,perbaikan',
+            'foto'        => 'nullable|image|max:2048',
         ]);
 
         $foto = null;
@@ -45,6 +45,7 @@ class AlatController extends Controller
             'nama_alat'   => $request->nama_alat,
             'kategori_id' => $request->kategori_id,
             'stok'        => $request->stok,
+            'stok_awal'   => $request->stok, // ← TAMBAHAN: otomatis sama dengan stok awal input
             'kondisi'     => $request->kondisi,
             'foto'        => $foto,
         ]);
@@ -87,6 +88,7 @@ class AlatController extends Controller
             'nama_alat'   => $request->nama_alat,
             'kategori_id' => $request->kategori_id,
             'stok'        => $request->stok,
+            'stok_awal'   => $alat->stok_awal, // ← TAMBAHAN: stok_awal tidak berubah saat edit
             'kondisi'     => $request->kondisi,
             'foto'        => $foto,
         ]);
